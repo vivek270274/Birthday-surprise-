@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Let's Celebrate</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #ffeaf4;
+      font-family: 'Segoe UI', sans-serif;
+      overflow: hidden;
+      transition: background 1.5s ease;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2.8em;
+      margin-top: 30px;
+      background: linear-gradient(to right, #d63384, #fd7e14, #ffc107);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      position: relative;
+      z-index: 2;
+    }
+
+    .container {
+      text-align: center;
+      position: relative;
+      z-index: 3;
+    }
+
+    .cake-wrapper {
+      display: inline-block;
+      margin-top: 30px;
+      cursor: pointer;
+      position: relative;
+      z-index: 4;
+    }
+
+    .cake {
+      position: relative;
+    }
+
+    .layer {
+      height: 30px;
+      border-radius: 10px;
+      margin-bottom: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .layer-bottom { width: 200px; background: #ec407a; }
+    .layer-middle { width: 160px; background: #f48fb1; margin: 0 auto; }
+    .layer-top { width: 120px; background: #fcd0e6; margin: 0 auto; }
+
+    .candle {
+  width: 8px;
+  height: 40px;
+  background-color: white;
+  position: absolute;
+  top: -45px; /* ✅ Adjusted */
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 4px;
+}
+    .flame {
+  width: 14px;
+  height: 14px;
+  background: radial-gradient(white, orange, red);
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  box-shadow: 0 0 15px gold;
+  animation: flicker 0.3s infinite alternate;
+}
+
+    @keyframes flicker {
+      0% { transform: translateX(-50%) scale(1); opacity: 1; }
+      100% { transform: translateX(-50%) scale(1.1) rotate(5deg); opacity: 0.9; }
+    }
+
+    .balloon {
+      position: absolute;
+      width: 30px;
+      height: 40px;
+      background-color: red;
+      border-radius: 50% 50% 45% 45%;
+      animation: floatUp 6s linear infinite;
+      z-index: 0;
+      box-shadow: 2px 5px 5px rgba(0,0,0,0.1);
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(100vh);
+        opacity: 0;
+      }
+      50% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-20vh);
+        opacity: 0;
+      }
+    }
+
+    .confetti {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background-color: red;
+      animation: fall 3s linear infinite;
+      transform: rotate(45deg);
+      z-index: 0;
+    }
+
+    @keyframes fall {
+      0% {
+        transform: translateY(-10vh) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    #birthdayMessage {
+      position: fixed;
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      font-size: 2.5em;
+      font-weight: bold;
+      color: #ff1493;
+      text-shadow: 2px 2px 10px rgba(0,0,0,0.2);
+      z-index: 100;
+      animation: popText 1s ease-out forwards;
+      display: none;
+    }
+
+    @keyframes popText {
+      0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+      60% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+      100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+    }
+    .instruction {
+  font-size: 1rem;
+  color: #c2185b;
+  margin-top: 10px;
+  font-style: italic;
+}
+
+.surprise-btn {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 12px 30px;
+  background: #f50057;
+  color: white;
+  border: none;
+  border-radius: 30px;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  transition: background 0.3s ease;
+  z-index: 100;
+}
+
+.surprise-btn:hover {
+  background: #c2185b;
+}
+  </style>
+</head>
+<body>
+  <h1>Let's Celebrate! 🎂</h1>
+
+  <div class="container">
+    <div class="cake-wrapper" onclick="startCelebration()">
+      <div class="cake">
+        <div class="candle">
+          <div class="flame" id="flame"></div>
+        </div>
+        <div class="layer layer-top"></div>
+        <div class="layer layer-middle"></div>
+        <div class="layer layer-bottom"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🎉 Happy Birthday Message -->
+  <div id="birthdayMessage">Happy Birthday My Qtt 💗</div>
+
+  <!-- 🔊 Background music -->
+  <audio id="bg-music" src="birthday.mp3" preload="auto"></audio>
+
+  <script>
+    function randomColor() {
+      const colors = ['#ff4d4d', '#ff66cc', '#ffd700', '#87ceeb', '#32cd32', '#ff9933'];
+      return colors[Math.floor(Math.random() * colors.length)];
+    }
+
+    function createBalloon() {
+      const balloon = document.createElement("div");
+      balloon.className = "balloon";
+      balloon.style.left = Math.random() * 100 + "vw";
+      balloon.style.backgroundColor = randomColor();
+      balloon.style.animationDuration = (4 + Math.random() * 4) + "s";
+      document.body.appendChild(balloon);
+      setTimeout(() => balloon.remove(), 10000);
+    }
+
+    function createConfetti() {
+      const confetti = document.createElement("div");
+      confetti.className = "confetti";
+      confetti.style.left = Math.random() * 100 + "vw";
+      confetti.style.backgroundColor = randomColor();
+      confetti.style.width = (6 + Math.random() * 6) + "px";
+      confetti.style.height = confetti.style.width;
+      confetti.style.animationDuration = (2 + Math.random() * 2) + "s";
+      document.body.appendChild(confetti);
+      setTimeout(() => confetti.remove(), 4000);
+    }
+
+    let started = false;
+
+    function startCelebration() {
+      if (started) return;
+      started = true;
+
+      document.body.style.background = "#fff4fa";
+      const flame = document.getElementById("flame");
+      if (flame) flame.style.display = "none";
+
+      // Play music
+      const music = document.getElementById("bg-music");
+      music.play().catch(() => {});
+
+      // Loop balloons
+      setInterval(() => {
+        for (let i = 0; i < 4; i++) createBalloon();
+      }, 300);
+
+      // Loop confetti
+      setInterval(() => {
+        for (let i = 0; i < 5; i++) createConfetti();
+      }, 300);
+
+      // Show Happy Birthday text
+      document.getElementById("birthdayMessage").style.display = "block";
+    }
+  </script>
+  <!-- ✅ Instruction Text -->
+<p class="instruction">Tap the cake to begin the celebration 🎂</p>
+
+<!-- ✅ Surprise Button at Bottom -->
+<button class="surprise-btn" onclick="location.href='surprise.html'">🎁 Surprise</button>
+</body>
+</html>
